@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { FaEdit, FaTrash, FaStar, FaRupeeSign, FaPlus } from "react-icons/fa";
 
-export default function AdminPanel() {
+export default function AdminPanel({ products, setProduct }) {
   let [title, setTitle] = useState("");
   let [price, setPrice] = useState(0);
   let [rating, setRating] = useState(0);
   let [dec, setDec] = useState("");
   let [imgUrl, setImgURl] = useState("");
+  let [editIndex, setEditIndex] = useState(null);
 
-  const [products, setProduct] = useState([]);
-
-  const handleAddProduct = (e) => {
+  // product Add
+  const handleAddOrUpdateProduct = (e) => {
     e.preventDefault();
     if (
       title.trim() === "" ||
@@ -20,14 +20,29 @@ export default function AdminPanel() {
       imgUrl.trim() === ""
     )
       return alert("Something is Invalid");
-    let newproduct = { title, price, rating, dec, imgUrl };
-    let updatedProducts = [...products, newproduct]; // Because delay 1 product problem
-    let exits = updatedProducts.find((e) => e.title === title ||  e.imgUrl === imgUrl);
-    if (exits) {
-      alert("title Same");
+    if (editIndex == null) {
+      let newproduct = { title, price, rating, dec, imgUrl };
+      let exits = products.find(
+        (e) => e.title === title || e.imgUrl === imgUrl
+      );
+      if (exits) {
+        alert("title Same");
+      } else {
+        let addProducts = [...products, newproduct]; // Because delay 1 product problem first state update with latest value then state
+        setProduct(addProducts);
+        localStorage.setItem("items", JSON.stringify(addProducts));
+      }
     } else {
-      setProduct(updatedProducts);
-      localStorage.setItem("items", JSON.stringify(updatedProducts));
+      let saveproduct = [...products]
+      saveproduct[editIndex].title = title 
+      saveproduct[editIndex].price = price 
+      saveproduct[editIndex].rating = rating 
+      saveproduct[editIndex].dec = dec 
+      saveproduct[editIndex].imgUrl = imgUrl 
+      setProduct(saveproduct)
+      setEditIndex(null)
+      localStorage.setItem("items", JSON.stringify(saveproduct));
+      
     }
 
     // Empty Inputs
@@ -37,8 +52,24 @@ export default function AdminPanel() {
     setDec("");
     setImgURl("");
   };
-  // console.log(products);
-  let items = JSON.parse(localStorage.getItem("items")) || [];
+  // Deleate Product
+  const handleDelete = (index) => {
+    let filter = products.filter((e, i) => i != index);
+    setProduct(filter);
+    setEditIndex(null)
+    localStorage.setItem("items", JSON.stringify(filter));
+  };
+  // Edit Product
+  const handleEdit = (index) => {
+    setTitle(products[index].title);
+    setPrice(products[index].price);
+    setRating(products[index].rating);
+    setDec(products[index].dec);
+    setImgURl(products[index].imgUrl);
+    setEditIndex(index);
+  };
+  // console.log(pro);
+
   return (
     <div className="min-h-screen p-10 overflow-hidden bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
       <div className="grid gap-10 md:grid-cols-2">
@@ -87,11 +118,13 @@ export default function AdminPanel() {
 
             {/* Button */}
             <button
-              onClick={(e) => handleAddProduct(e)}
+              onClick={(e) => handleAddOrUpdateProduct(e)}
               type="submit"
               className="flex items-center justify-center gap-2 px-5 py-3 text-lg font-semibold text-white transition-all shadow-md rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:scale-105 hover:shadow-lg hover:from-indigo-700 hover:to-blue-700"
-            >
-              <FaPlus /> Add Product
+            > {
+              editIndex == null ? <> <FaPlus /> Add Product</> : <> <FaPlus /> Update Product</>
+            }
+               
             </button>
           </form>
         </div>
@@ -102,7 +135,7 @@ export default function AdminPanel() {
             Product List
           </h2>
           <div className="space-y-6">
-            {items.map((e, i) => {
+            {products.map((e, i) => {
               return (
                 <div
                   key={i}
@@ -130,10 +163,16 @@ export default function AdminPanel() {
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-indigo-600 transition border border-indigo-400 rounded-lg hover:bg-indigo-600 hover:text-white hover:scale-105">
+                    <button
+                      onClick={() => handleEdit(i)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-indigo-600 transition border border-indigo-400 rounded-lg hover:bg-indigo-600 hover:text-white hover:scale-105"
+                    >
                       <FaEdit /> Edit
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition rounded-lg bg-rose-500 hover:bg-rose-600 hover:scale-105">
+                    <button
+                      onClick={() => handleDelete(i)}
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition rounded-lg bg-rose-500 hover:bg-rose-600 hover:scale-105"
+                    >
                       <FaTrash /> Delete
                     </button>
                   </div>
