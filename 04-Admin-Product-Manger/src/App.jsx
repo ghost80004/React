@@ -1,10 +1,12 @@
 import React from "react";
 import AdminPanel from "./components/AdminPanel";
 import ProductsPage from "./components/ProductsPage";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import { useState } from "react";
+import  Login  from './auth/Login';
 export default function App() {
-  const [products, setProduct] = useState(JSON.parse(localStorage.getItem("items")) || []);
+  const [products, setProducts] = useState(JSON.parse(localStorage.getItem("items")) || []);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
   // optional
    // useEffect(() => {
   //   let items = JSON.parse(localStorage.getItem("items")) || [];
@@ -14,9 +16,17 @@ export default function App() {
       path: "/",
       element: <ProductsPage products={products} />,
     },
-    {
+ {
       path: "/admin",
-      element: <AdminPanel products={products} setProduct={setProduct} />,
+      element: isLoggedIn ? (
+        <AdminPanel products={products} setProducts={setProducts} />
+      ) : (
+        <Navigate to="/login" />
+      ),
+    },
+     {
+      path: "/login",
+      element: <Login setIsLoggedIn={setIsLoggedIn} />,
     },
   ]);
   return (
