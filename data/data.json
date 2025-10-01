@@ -1,0 +1,47 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Rohit",
+      "age": 22
+    },
+    {
+      "id": "2",
+      "name": "Aman",
+      "age": 25
+    },
+    {
+      "id": "3",
+      "name": "Neha",
+      "age": 20
+    },
+    {
+      "id": "f924",
+      "name": "Ankit"
+    },
+    {
+      "id": "da6b",
+      "name": "Ankit"
+    },
+    {
+      "id": "faf8",
+      "name": "Ankit"
+    },
+    {
+      "id": "f5f9",
+      "name": "Ankit"
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "title": "iPhone",
+      "price": 1000
+    },
+    {
+      "id": "2",
+      "title": "Samsung",
+      "price": 800
+    }
+  ]
+}
